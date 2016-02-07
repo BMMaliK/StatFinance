@@ -51,10 +51,22 @@ plot.PCA(PCAres, axes = c(1,2), choix="ind", habillage = "none", select = (l-20)
 plot.PCA(PCAres, axes = c(1,2), choix="var")
 dimdesc(PCAres, axes=c(1,2))
 
-## Markowitz
+## Nettoyage de la matrice de corrélation
+ReturnsXts = ReturnsXts+1
 PastXts = ReturnsXts["/2014"]
 FutureXts = ReturnsXts["2015/"]
 
 NPast=nrow(PastXts)
-pPast=ncol(PastXts)
+p=ncol(ReturnsXts)
+N = nrow(ReturnsXts)
+
 PastMeans = colMeans(PastXts)
+PastCor = cor(PastXts)
+
+Z = svd(PastCor)
+q = p/NPast
+Lambda_plus = 1+sqrt(q)
+Z$d[Z$d<Lambda_plus] = 0
+a = (p-sum(Z$d))/p
+CorClean = Z$u %*% diag(Z$d) %*% t(Z$v)
+CorClean = CorClean + a*diag(p)
