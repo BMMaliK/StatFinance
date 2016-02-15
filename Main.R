@@ -89,6 +89,9 @@ N = nrow(ReturnsXts) #Nombre total de dates
 
 PastMeans = colMeans(PastXts[1:30]) #Moyenne
 PastCor = cor(PastXts[,1:30]) #Estimateur empirique de la matrice de corrélation
+x11() ## Nouvelle Fenêtre graphique
+par(mfrow=c(1,2)) ## Formattage
+image(PastCor, xlab = "Corrélation empirique")
 
 Z = svd(PastCor) #Digonalisation
 q = p/NPast 
@@ -100,6 +103,7 @@ CorClean = Z$u %*% diag(Z$d) %*% t(Z$v) #reconstitution de la matrice
 diags = diag(CorClean) %o% rep(1,p)
 diags = diags*t(diags)
 CorClean = CorClean / sqrt(diags) #renormalisation pour avoir une matrice de corrélation
+image(CorClean, xlab = "Corrélation nettoyée")
 
 ###############
 #  Markowitz  #
@@ -164,6 +168,7 @@ for (i in 1:20) {
 } 
 
 # Trace la frontière efficiente
+x11() ## Nouvelle Fenêtre graphique
 plot(ef$sd, ef$er, type="b", col="blue", main="Efficient Frontier",
      xlab="portfolio sd", ylab="portfolio er")
 points(results.mat[,"sd"], results.mat[,"er"], type="b",
