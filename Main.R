@@ -111,7 +111,7 @@ library(tseries)
 
 ret.mat = PastXts[,1:30] #Données
 
-# Mu et Sigma en utilisant les corrélations nettoyées
+# Mu et Sigma (en utilisant les corrélations nettoyées)
 mu.hat = PastMeans[1:30]
 cov.hat = var(PastXts[,1:30])
 vols = sqrt(diag(cov.hat))
@@ -141,7 +141,7 @@ ep2$ps
 ep2$pw
 
 # Portefeuille efficient sans vente à découvert
-ep2.ns = portfolio.optim(ret.mat, pm = mu.hat[1], shorts=F)
+ep2.ns = portfolio.optim(ret.mat, shorts=F)
 ep2.ns$pm
 ep2.ns$ps
 ep2.ns$pw
@@ -156,7 +156,7 @@ tp2$pw
 
 results.mat = matrix(0, 20, ncol(PastXts[,1:30])+2)
 colnames(results.mat) = c("er","sd",colnames(ret.mat))
-targetRet.vec = seq(from=gp$er, to=max(mu.hat), length=20)
+targetRet.vec = seq(from=1.0001, to=1.001, length=20)
 for (i in 1:20) {
   tmp.p = portfolio.optim(ret.mat, pm = targetRet.vec[i], 
                           shorts=F)
