@@ -17,6 +17,7 @@ library(quantmod)
 TickerList = read.csv("TickerList.csv", sep = ';')
 TickerList
 Tickers = as.vector(TickerList$Ticker)
+rownames(TickerList) = TickerList$Ticker
 
 
 ## Récupération des données historiques grace à la Bibliothèque Quantmod
@@ -56,7 +57,7 @@ library(FactoMineR) ## Charge la bibliothèque
 x11() ## Nouvelle Fenêtre graphique
 par(mfrow=c(1,2)) ## Formattage
 
-PCAres = PCA(ReturnsXts, quanti.sup = 31, quali.sup = 32, scale.unit = T, ncp = 3, graph = T) ## ACP
+PCAres = PCA(ReturnsXts, quanti.sup = 31, quali.sup = 32, scale.unit = T, ncp = 5, graph = T) ## ACP
 
 ## Projection des individus
 # Rouge : DJI > 0 # Noir : DJI <= 0
@@ -64,7 +65,33 @@ plot.PCA(PCAres, axes = c(1,2), choix="ind", habillage = 32, select = (1286-20):
 ## Projection des 
 plot.PCA(PCAres, axes = c(1,2), choix="var")
 ## Corrélation des variables aux deux premières composantes principales
-dimdesc(PCAres, axes=c(1,2))
+PCACorrels = dimdesc(PCAres, axes=c(1,2,3,4,5))
+PCACorrels
+
+## Corrélations à la première composante principale
+summary(PCACorrels$Dim.1$quanti[2:31,1])
+## Corrélation de l'indice à la première composante principale
+PCACorrels$Dim.1$quanti[1,1]
+
+## Stocks Positivement corrélés à la 2e composante
+PCA2Pos = PCACorrels$Dim.2$quanti[PCACorrels$Dim.2$quanti[,1]>.2,]
+PCA2Pos
+TickerList[rownames(PCA2Pos),]
+
+## Stocks Négativement corrélés à la 2e composante
+PCA2Neg = PCACorrels$Dim.2$quanti[PCACorrels$Dim.2$quanti[,1]<(-.2),]
+PCA2Neg
+TickerList[rownames(PCA2Neg),]
+
+## Stocks Positivement corrélés à la 4e composante
+PCA4Pos = PCACorrels$Dim.4$quanti[PCACorrels$Dim.4$quanti[,1]>.2,]
+PCA4Pos
+TickerList[rownames(PCA4Pos),]
+
+## Stocks Négativement corrélés à la 4e composante
+PCA4Neg = PCACorrels$Dim.4$quanti[PCACorrels$Dim.4$quanti[,1]<(-.2),]
+PCA4Neg
+TickerList[rownames(PCA4Neg),]
 
 ## Journée Bull
 mean(ReturnsXts["20160122",1:30])
